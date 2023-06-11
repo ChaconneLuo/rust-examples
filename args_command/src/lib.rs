@@ -8,6 +8,7 @@ pub enum QueryOption {
     #[strum(serialize = "show")]
     Show,
 }
+
 pub struct Config {
     query: String,
     filename: String,
