@@ -1,3 +1,5 @@
+use std::io;
+use List::{Cons, Nil};
 enum List<T> {
     Cons(T, Box<List<T>>),
     Nil,
@@ -11,9 +13,6 @@ impl std::fmt::Display for List<String> {
         }
     }
 }
-
-use std::io;
-use List::{Cons, Nil};
 
 fn main() {
     let mut length = 0;
