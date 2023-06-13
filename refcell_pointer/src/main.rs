@@ -1,6 +1,5 @@
-use std::cell::RefCell;
-
 use refcell_pointer::{LimitTracker, Message};
+use std::cell::RefCell;
 
 struct Messenger {
     message: RefCell<Vec<String>>,
