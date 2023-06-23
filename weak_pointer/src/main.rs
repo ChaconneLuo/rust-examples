@@ -53,10 +53,12 @@ fn main() {
         "root rc count after changing root = {}",
         Rc::strong_count(&root)
     );
+
     println!(
         "root weak count after changing root = {}",
         Rc::weak_count(&root)
     );
+
     {
         let right_leaf = Rc::new(Node::<i64> {
             value: 15,
