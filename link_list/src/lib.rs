@@ -1,5 +1,4 @@
 use std::{cell::RefCell, rc::Rc};
-
 #[derive(Debug, Clone)]
 pub struct Node<T> {
     value: Option<T>,
@@ -11,8 +10,8 @@ pub trait List<T> {
     fn push_back(&self, value: Option<T>);
     fn len(&self) -> usize;
     fn unshift(&self, value: Option<T>);
+    fn find(&self, value: Option<T>, eq: fn(args0: &T, args1: &T) -> bool) -> bool;
     // fn remove(&mut self, value: T);
-    // fn find(&self, value: T) -> Option<T>;
     // fn print(&self);
 }
 
@@ -82,5 +81,9 @@ impl<T> List<T> for LinkedList<T> {
             }
         }
         count
+    }
+
+    fn find(&self, value: Option<T>, eq: fn(args0: &T, args1: &T) -> bool) -> bool {
+        true
     }
 }
