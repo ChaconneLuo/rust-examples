@@ -52,17 +52,6 @@ impl<T> List<T> for LinkedList<T> {
         }
     }
 
-    fn unshift(&self, value: Option<T>) {
-        if let Some(ref head) = self.head {
-            let current: Rc<RefCell<Node<T>>> = Rc::clone(head);
-            let new_node: Node<T> = Node {
-                value,
-                next: (*current).borrow_mut().next.to_owned(),
-            };
-            (*current).borrow_mut().next = Option::Some(Rc::new(RefCell::new(new_node)));
-        }
-    }
-
     fn len(&self) -> usize {
         let mut count: usize = 0;
         if let Some(ref head) = self.head {
@@ -81,6 +70,17 @@ impl<T> List<T> for LinkedList<T> {
             }
         }
         count
+    }
+
+    fn unshift(&self, value: Option<T>) {
+        if let Some(ref head) = self.head {
+            let current: Rc<RefCell<Node<T>>> = Rc::clone(head);
+            let new_node: Node<T> = Node {
+                value,
+                next: (*current).borrow_mut().next.to_owned(),
+            };
+            (*current).borrow_mut().next = Option::Some(Rc::new(RefCell::new(new_node)));
+        }
     }
 
     fn find(&self, value: Option<T>, eq: fn(args0: &T, args1: &T) -> bool) -> bool {
