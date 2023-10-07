@@ -107,15 +107,13 @@ impl<T: Copy> List<T> for LinkedList<T> {
                         Some(node) => node.borrow_mut().next = None,
                         None => {}
                     }
-                    self.length -= 1;
                     self.tail = Some(node.clone());
-                    return Some(node.borrow().value);
                 } else {
                     self.head = None;
                     self.tail = None;
-                    self.length -= 1;
-                    return Some(node.borrow().value);
                 }
+                self.length -= 1;
+                return Some(node.borrow().value);
             }
             None => {
                 return None;
