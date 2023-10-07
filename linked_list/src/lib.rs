@@ -95,7 +95,7 @@ impl<T: Copy> List<T> for LinkedList<T> {
             Some(node) => {
                 if self.length != 1 {
                     let mut ptr = self.head.clone();
-                    for index in 1..self.length - 1 {
+                    for _index in 1..self.length - 1 {
                         match ptr {
                             Some(node) => {
                                 ptr = node.borrow().next.clone();

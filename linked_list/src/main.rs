@@ -1,4 +1,4 @@
-use link_list::{LinkedList, List};
+use linked_list::{LinkedList, List};
 
 fn main() {
     let mut link_list = LinkedList::<i32>::new();
