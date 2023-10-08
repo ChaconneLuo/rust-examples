@@ -5,11 +5,13 @@ type LinkNode<T> = Option<CoreNode<T>>;
 
 #[derive(Debug, Clone)]
 struct Node<T> {
-    value: T,
+    value: Option<T>,
     next: LinkNode<T>,
 }
 
-pub trait List<T: Copy> {
+pub struct IntoIter<T>(LinkedList<T>);
+
+pub trait List<T> {
     fn new() -> Self;
     fn push_back(&mut self, value: T);
     fn len(&self) -> usize;
@@ -27,11 +29,14 @@ pub struct LinkedList<T> {
 
 impl<T> Node<T> {
     fn new(value: T) -> CoreNode<T> {
-        Rc::new(RefCell::new(Node { value, next: None }))
+        Rc::new(RefCell::new(Node {
+            value: Some(value),
+            next: None,
+        }))
     }
 }
 
-impl<T: Copy> List<T> for LinkedList<T> {
+impl<T> List<T> for LinkedList<T> {
     fn new() -> Self {
         LinkedList {
             length: 0,
@@ -40,7 +45,7 @@ impl<T: Copy> List<T> for LinkedList<T> {
         }
     }
 
-    fn push_back(&mut self, value: T) {
+    fn unshift(&mut self, value: T) {
         let new_node = Node::new(value);
         new_node.borrow_mut().next = self.head.take();
 
@@ -53,7 +58,7 @@ impl<T: Copy> List<T> for LinkedList<T> {
         self.head = Some(new_node);
     }
 
-    fn unshift(&mut self, value: T) {
+    fn push_back(&mut self, value: T) {
         let new_node = Node::new(value);
 
         match self.tail.take() {
@@ -71,14 +76,19 @@ impl<T: Copy> List<T> for LinkedList<T> {
         let mut now_node = self.head.clone();
         loop {
             match now_node.take() {
-                Some(node) => {
-                    let res = eq(&value, &node.borrow().value);
-                    if res {
-                        return true;
-                    } else {
-                        now_node = node.borrow().next.clone()
+                Some(node) => match &node.borrow().value {
+                    Some(inner_node) => {
+                        let res = eq(&value, &inner_node);
+                        if res {
+                            return true;
+                        } else {
+                            now_node = node.borrow().next.clone()
+                        }
                     }
-                }
+                    None => {
+                        panic!("unexpected none")
+                    }
+                },
                 None => {
                     return false;
                 }
@@ -103,17 +113,19 @@ impl<T: Copy> List<T> for LinkedList<T> {
                             None => {}
                         }
                     }
-                    match ptr.take() {
-                        Some(node) => node.borrow_mut().next = None,
+                    match ptr {
+                        Some(node) => {
+                            node.borrow_mut().next = None;
+                            self.tail = Some(node);
+                        }
                         None => {}
                     }
-                    self.tail = Some(node.clone());
                 } else {
                     self.head = None;
                     self.tail = None;
                 }
                 self.length -= 1;
-                return Some(node.borrow().value);
+                return Some(node.borrow_mut().value.take().unwrap());
             }
             None => {
                 return None;
@@ -134,11 +146,24 @@ impl<T: Copy> List<T> for LinkedList<T> {
                     }
                 }
                 self.length -= 1;
-                return Some(node.borrow().value);
+                return Some(node.borrow_mut().value.take().unwrap());
             }
             None => {
                 return None;
             }
         }
+    }
+}
+
+impl<T> Iterator for IntoIter<T> {
+    type Item = T;
+    fn next(&mut self) -> Option<Self::Item> {
+        self.0.shift()
+    }
+}
+
+impl<T> LinkedList<T> {
+    pub fn into_iter(self) -> IntoIter<T> {
+        IntoIter(self)
     }
 }
